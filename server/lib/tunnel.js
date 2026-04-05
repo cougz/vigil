@@ -110,7 +110,7 @@ export function createKvmTunnel(ws, device, log) {
           const authType = acc[4]
           const authData = acc.slice(9, 9 + authDataLen)
 
-          if (authType === 0 && status !== 0) {
+          if (authType === 0) {
             log.info({ target, methods: Array.from(authData) }, 'KVM auth methods available')
             let chosenType = 4
             if (!authData.includes(4) && authData.includes(3)) chosenType = 3
