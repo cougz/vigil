@@ -64,6 +64,10 @@ function parseDigestChallenge(wwwAuth) {
     const qopMatch = wwwAuth.match(/qop=(\w+)/)
     if (qopMatch) params.qop = qopMatch[1]
   }
+  if (params.qop) {
+    const qopOptions = params.qop.split(',').map(s => s.trim())
+    params.qop = qopOptions.includes('auth') ? 'auth' : qopOptions[0]
+  }
   return params
 }
 
