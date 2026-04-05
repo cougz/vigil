@@ -1,8 +1,11 @@
 import { createHash, randomBytes } from 'crypto'
 import { randomUUID } from 'crypto'
-import { Agent } from 'undici'
+import tls from 'node:tls'
 
-const tlsAgent = new Agent({ connect: { rejectUnauthorized: false } })
+const origCheck = tls.checkServerIdentity
+tls.checkServerIdentity = function (...args) {
+  try { return origCheck(...args) } catch { return undefined }
+}
 
 export const POWER_STATES = {
   on: 2,
@@ -87,8 +90,6 @@ function buildAuthHeader(username, password, method, uri, challenge) {
   return header
 }
 
-const fetchOpts = { dispatcher: tlsAgent }
-
 async function wsmanPost(device, soapBody, log) {
   const protocol = device.tls ? 'https' : 'http'
   const url = `${protocol}://${device.host}:${device.port}/wsman`
@@ -104,7 +105,6 @@ async function wsmanPost(device, soapBody, log) {
     headers,
     body: soapBody,
     signal: AbortSignal.timeout(8000),
-    ...fetchOpts,
   }).catch(err => {
     log.error({ err: err.message, host: device.host, port: device.port }, 'WS-MAN connection failed')
     throw new Error(`Connection to ${device.host}:${device.port} failed: ${err.message}`)
@@ -138,7 +138,6 @@ async function wsmanPost(device, soapBody, log) {
     headers,
     body: soapBody,
     signal: AbortSignal.timeout(8000),
-    ...fetchOpts,
   }).catch(err => {
     log.error({ err: err.message, host: device.host }, 'WS-MAN authenticated request failed')
     throw new Error(`Authenticated request to ${device.host}:${device.port} failed: ${err.message}`)
