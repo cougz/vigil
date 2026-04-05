@@ -87,6 +87,8 @@ function buildAuthHeader(username, password, method, uri, challenge) {
   return header
 }
 
+const fetchOpts = { dispatcher: tlsAgent }
+
 async function wsmanPost(device, soapBody, log) {
   const protocol = device.tls ? 'https' : 'http'
   const url = `${protocol}://${device.host}:${device.port}/wsman`
@@ -102,7 +104,7 @@ async function wsmanPost(device, soapBody, log) {
     headers,
     body: soapBody,
     signal: AbortSignal.timeout(8000),
-    dispatcher: tlsAgent,
+    ...fetchOpts,
   }).catch(err => {
     log.error({ err: err.message, host: device.host, port: device.port }, 'WS-MAN connection failed')
     throw new Error(`Connection to ${device.host}:${device.port} failed: ${err.message}`)
@@ -116,7 +118,7 @@ async function wsmanPost(device, soapBody, log) {
       log.error({ status: res1.status, host: device.host, body: text.substring(0, 500) }, 'WS-MAN unexpected non-401 error')
       throw new Error(`WS-MAN returned HTTP ${res1.status}`)
     }
-    log.debug({ host: device.host, responseLength: text.length }, 'WS-MAN succeeded without auth (no digest required)')
+    log.info({ host: device.host, responseLength: text.length }, 'WS-MAN succeeded without digest auth')
     return text
   }
 
@@ -131,10 +133,22 @@ async function wsmanPost(device, soapBody, log) {
 
   log.info({ url, host: device.host }, 'WS-MAN request sending (authenticated)')
 
-import { createHash, randomBytes } from 'crypto'
-import { randomUUID } from 'crypto'
+  const res2 = await fetch(url, {
+    method: 'POST',
+    headers,
+    body: soapBody,
+    signal: AbortSignal.timeout(8000),
+    ...fetchOpts,
+  }).catch(err => {
+    log.error({ err: err.message, host: device.host }, 'WS-MAN authenticated request failed')
+    throw new Error(`Authenticated request to ${device.host}:${device.port} failed: ${err.message}`)
+  })
 
-const tlsAgent = new Agent({ connect: { rejectUnauthorized: false } })
+  const text = await res2.text()
+  if (!res2.ok) {
+    log.error({ status: res2.status, host: device.host, body: text.substring(0, 500) }, 'WS-MAN authenticated request returned error')
+    throw new Error(`WS-MAN returned HTTP ${res2.status}: ${text.substring(0, 200)}`)
+  }
 
   log.info({ host: device.host, responseLength: text.length }, 'WS-MAN authenticated request succeeded')
   log.debug({ responseXml: text, host: device.host }, 'WS-MAN full response XML')
