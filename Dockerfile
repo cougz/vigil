@@ -15,7 +15,7 @@ COPY server/package*.json ./
 RUN npm install --omit=dev
 
 COPY server/ ./
-COPY --from=builder /build/dist ./public
+COPY --from=builder /public ./public
 
 RUN mkdir -p /data && chown vigil:vigil /data && chown -R vigil:vigil /app
 
