@@ -194,7 +194,7 @@ export function createKvmTunnel(ws, device, log) {
               parts.push(Buffer.from([qopBuf.length]), qopBuf)
             }
             const digestResponse = Buffer.concat(parts)
-            log.info({ target, authType, realm, nonce, qop, cnonce, snc, response, hex: digestResponse.toString('hex'), userLen: device.username?.length, passLen: device.password?.length }, 'KVM sending digest response')
+            log.info({ target, authType, realm, nonceLen: nonce.length }, 'KVM digest challenge received, computing response')
             tcp.write(digestResponse)
           } else if (status === 0) {
             log.info({ target }, 'KVM auth succeeded, opening KVM channel')

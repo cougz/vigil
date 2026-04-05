@@ -130,10 +130,10 @@ async function wsmanPost(device, soapBody, log) {
 
   const wwwAuth = res1.headers.get('www-authenticate') ?? ''
   const challenge = parseDigestChallenge(wwwAuth)
-  log.info({ wwwAuth, challenge, host: device.host }, 'WS-MAN digest challenge parsed')
+  log.debug({ challenge, host: device.host }, 'WS-MAN digest challenge parsed')
 
   const authHeader = buildAuthHeader(device.username, device.password, 'POST', '/wsman', challenge)
-  log.info({ authHeader, host: device.host, userLen: device.username?.length, passLen: device.password?.length }, 'WS-MAN built Authorization header')
+  log.debug({ host: device.host }, 'WS-MAN built Authorization header')
   headers.Authorization = authHeader
 
   log.info({ url, host: device.host }, 'WS-MAN request sending (authenticated)')
@@ -150,7 +150,7 @@ async function wsmanPost(device, soapBody, log) {
 
   const text = await res2.text()
   if (!res2.ok) {
-    log.error({ status: res2.status, host: device.host, body: text.substring(0, 500) }, 'WS-MAN authenticated request returned error')
+    log.error({ status: res2.status, host: device.host, body: text.substring(0, 2000) }, 'WS-MAN authenticated request returned error')
     throw new Error(`WS-MAN returned HTTP ${res2.status}: ${text.substring(0, 200)}`)
   }
 
