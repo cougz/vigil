@@ -143,8 +143,8 @@ function DeviceDetail({ id, addToast, onDeviceUpdated }) {
           <button
             class="btn btn-primary"
             onClick={() => route(`/device/${id}/kvm`)}
-            disabled={!isOn}
-            title={!isOn ? 'Machine must be powered on' : ''}
+            disabled={false}
+            title="Open Remote Desktop session"
           >
             Remote Desktop
           </button>
