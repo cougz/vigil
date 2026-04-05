@@ -5,7 +5,7 @@ Lightweight, self-hosted Docker application for managing Intel vPro / Intel AMT 
 ## Quick Start
 
 ```bash
-git clone git@github.com:cougz/vigil.git
+git clone https://github.com/cougz/vigil.git
 cd vigil
 docker compose up --build -d
 ```
