@@ -1,5 +1,6 @@
 node_modules
 client/node_modules
+client/package-lock.json
 public
 data/computers.json
 data/config.json

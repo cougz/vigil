@@ -1,7 +1,7 @@
 FROM node:22-alpine AS builder
 WORKDIR /build
 COPY client/package*.json ./
-RUN npm ci
+RUN npm install
 COPY client/ .
 RUN npm run build
 
@@ -12,7 +12,7 @@ RUN addgroup -S vigil && adduser -S vigil -G vigil
 WORKDIR /app
 
 COPY server/package*.json ./
-RUN npm ci --omit=dev
+RUN npm install --omit=dev
 
 COPY server/ ./
 COPY --from=builder /build/dist ./public
