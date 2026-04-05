@@ -1,0 +1,47 @@
+services:
+
+  vigil:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: vigil:latest
+    container_name: vigil
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/data
+    environment:
+      NODE_ENV:   production
+      PORT:       "3000"
+      HOST:       "0.0.0.0"
+      DATA_PATH:  /data
+      LOG_LEVEL:  info
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+        labels:   "service"
+    labels:
+      service: vigil
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
+      interval:     30s
+      timeout:       5s
+      start_period: 15s
+      retries:       3
+
+  logs:
+    image: amir20/dozzle:latest
+    container_name: vigil-logs
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      DOZZLE_FILTER: "name=vigil"
+      DOZZLE_LEVEL:  info
+    depends_on:
+      - vigil
