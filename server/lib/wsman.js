@@ -221,14 +221,7 @@ export async function getPowerState(device, log) {
   const action = 'http://schemas.xmlsoap.org/ws/2004/09/transfer/Get'
   const resourceUri = 'http://schemas.dmtf.org/wbem/wscim/1/cim-schema/2/CIM_AssociatedPowerManagementService'
 
-  const selectorSet = [
-    { name: 'Name', value: 'Intel(r) AMT' },
-    { name: 'SystemName', value: 'Intel(r) AMT' },
-    { name: 'CreationClassName', value: 'CIM_AssociatedPowerManagementService' },
-    { name: 'SystemCreationClassName', value: 'CIM_ComputerSystem' },
-  ]
-
-  const soap = buildEnvelope(action, resourceUri, selectorSet, '')
+  const soap = buildEnvelope(action, resourceUri, null, '')
   try {
     const responseXml = await wsmanPost(device, soap, log)
     const match = responseXml.match(/<\w+:PowerState[^>]*>(\d+)<\/\w+:PowerState>/)
