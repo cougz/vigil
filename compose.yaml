@@ -31,17 +31,3 @@ services:
       timeout:       5s
       start_period: 15s
       retries:       3
-
-  logs:
-    image: amir20/dozzle:latest
-    container_name: vigil-logs
-    restart: unless-stopped
-    ports:
-      - "8080:8080"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    environment:
-      DOZZLE_FILTER: "name=vigil"
-      DOZZLE_LEVEL:  info
-    depends_on:
-      - vigil

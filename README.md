@@ -11,7 +11,6 @@ docker compose up --build -d
 ```
 
 - **Vigil UI:** http://localhost:3000
-- **Log viewer (Dozzle):** http://localhost:8080
 
 ## Development
 
@@ -30,7 +29,6 @@ The Vite dev server proxies `/api` and `/ws` to the Fastify backend on port 3000
 | Port | Service |
 |------|---------|
 | 3000 | Vigil web UI + API |
-| 8080 | Dozzle log viewer |
 
 ## Intel AMT Ports
 
