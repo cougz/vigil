@@ -5,9 +5,7 @@ RUN npm install
 COPY client/ .
 RUN npm run build
 
-FROM node:22-alpine AS runtime
-
-RUN addgroup -S vigil && adduser -S vigil -G vigil
+FROM node:22-alpine
 
 WORKDIR /app
 
@@ -15,11 +13,9 @@ COPY server/package*.json ./
 RUN npm install --omit=dev
 
 COPY server/ ./
-COPY --from=builder /public ./public
+COPY --from=builder /build/dist ./public
 
-RUN mkdir -p /data && chown vigil:vigil /data && chown -R vigil:vigil /app
-
-USER vigil
+RUN mkdir -p /data
 
 ENV NODE_ENV=production \
     PORT=3000 \
