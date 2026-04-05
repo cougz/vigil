@@ -40,7 +40,7 @@ function App() {
               <div
                 key={d.id}
                 class={`device-item ${activeId === d.id ? 'active' : ''}`}
-                onClick={() => { setCurrentUrl(`/device/${d.id}`) }}
+                onClick={() => route(`/device/${d.id}`)}
               >
                 <span class={`device-dot ${dotClass}`} />
                 <span class="device-name">{d.name}</span>
@@ -353,7 +353,7 @@ function KvmView({ id }) {
   return (
     <div class="kvm-view">
       <div class="kvm-toolbar">
-        <button class="btn btn-ghost" onClick={() => { window.location.href = `/device/${id}` }}>← Back</button>
+        <button class="btn btn-ghost" onClick={() => route(`/device/${id}`)}>← Back</button>
         <span class="mono" style="font-size:13px">{deviceName}</span>
         <span class={`kvm-status ${status}`}>
           {status === 'connecting' ? 'Connecting\u2026' : status === 'connected' ? 'Connected' : 'Disconnected'}
