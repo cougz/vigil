@@ -126,9 +126,10 @@ async function wsmanPost(device, soapBody, log) {
 
   const wwwAuth = res1.headers.get('www-authenticate') ?? ''
   const challenge = parseDigestChallenge(wwwAuth)
-  log.debug({ challenge, host: device.host }, 'Digest auth challenge parsed')
+  log.info({ wwwAuth, challenge, host: device.host }, 'WS-MAN digest challenge parsed')
 
   const authHeader = buildAuthHeader(device.username, device.password, 'POST', '/wsman', challenge)
+  log.info({ authHeader, host: device.host, userLen: device.username?.length, passLen: device.password?.length }, 'WS-MAN built Authorization header')
   headers.Authorization = authHeader
 
   log.info({ url, host: device.host }, 'WS-MAN request sending (authenticated)')
